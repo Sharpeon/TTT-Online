@@ -1,0 +1,18 @@
+Make lobby system [x]
+Make connection [x]
+
+Empêcher du côté serveur de pouvoir placer un symbol si la case est déja occupé [?]
+
+
+Handle server connection lost/closed
+
+Afficher c'est le tour de qui on the side [X]
+Verifier la victoire et terminer la partie[X]
+Restart une game lorsque personne gagne et que board full[]
+Fix le perdant qui voit pas le symbole final []
+
+=========
+
+Confirmed working :
+game.placeSymbole()
+game.checkWin()
