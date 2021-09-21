@@ -7,7 +7,12 @@ class Game:
         self.rows = 3
         self.cols = 3
         self.grid = [[-1 for i in range(self.cols)] for j in range(self.rows)]  # 2d arrays are weird in python...
-    
+        self.last_winner = None
+
+    def resetGame(self):
+        self.turnP1 = random.choice([True, False])
+        self.grid = [[-1 for i in range(self.cols)] for j in range(self.rows)]
+
     def placeSymbol(self, pos:int, symbol:str):
         finalPos = 0
 

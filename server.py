@@ -19,9 +19,11 @@ except socket.error as e:
 server.listen()
 print(f"Server started on port {PORT}")
 
-def reset_game(conn, game, gameId):
-    games[gameId] = Game(gameId)
-    conn.sendall(pickle.dumps(game))
+def reset_game(game, winner):
+    game.resetGame()
+    game.last_winner = winner
+
+    return game
 
 def handle_client(conn:socket.socket, player, gameId):
     global idCount
@@ -60,8 +62,18 @@ def handle_client(conn:socket.socket, player, gameId):
             except ValueError: # The client sent something else
                 if data == "GET_GAME":
                     conn.sendall(pickle.dumps(game))
-                elif data == "RESET_GAME":
-                    reset_game(conn, game, gameId)
+                elif data == "RESET_GAME": # TODO: Enlever ce bad boi
+                    game.resetGame() 
+                    conn.sendall(pickle.dumps(game))
+                elif data == "WINNER_X":
+                    game = reset_game(game, "X")
+                    conn.sendall(pickle.dumps(game))
+                elif data == "WINNER_O":
+                    game = reset_game(game, "O")
+                    conn.sendall(pickle.dumps(game))
+                elif data == "WINNER_DRAW":
+                    game = reset_game(game, "-")
+                    conn.sendall(pickle.dumps(game))
 
         else:
             break

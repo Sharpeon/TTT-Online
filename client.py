@@ -1,6 +1,3 @@
-from os import truncate
-
-from pygame import mouse
 from network import Network
 import pygame
 
@@ -37,7 +34,7 @@ class Button:
     def get_Rect(self):
         return (self.x, self.y, self.width, self.height)
 
-def draw_window(btns_to_draw, game, grid_btns, myTurn):
+def draw_window(btns_to_draw, game, grid_btns, myTurn, last_winner=None):
     WIN.fill(Palette().bg)
 
     GRID_SURFACE.fill(Palette().gridBg)
@@ -71,6 +68,7 @@ def draw_window(btns_to_draw, game, grid_btns, myTurn):
                 count += 1
 
     draw_turn(myTurn)
+    draw_status(last_winner)
 
     pygame.display.flip()
 
@@ -78,11 +76,19 @@ def draw_turn(myTurn:bool):
     """Show on the side whether it's your turn or your opponent's"""
     font = pygame.font.SysFont("comicsans", 32)
     if myTurn:
-        text = font.render("Your turn! :)", 1, Palette().blue)
+        text = font.render("Your turn! :)", 1, Palette().gridBg)
         WIN.blit(text, (189 - text.get_width() - (text.get_width() / 2 / 2), GRID_HEIGHT / 2))
     else:
-        text = font.render("Opponent's Turn", 1, Palette().blue)
+        text = font.render("Opponent's Turn", 1, Palette().gridBg)
         WIN.blit(text, (189 - text.get_width() - ((189 - text.get_width()) / 2), GRID_HEIGHT / 2))
+
+def draw_status(last_winner=None):
+    """Draw who won the last game"""
+    font = pygame.font.SysFont("comicsans", 32)
+    if last_winner:
+        text = font.render(f"Last Winner: {last_winner.upper()}", 1, Palette().gridBg)
+        WIN.blit(text, (WIDTH - text.get_width() - (189 - text.get_width()) / 2, GRID_HEIGHT / 2))
+
 
 def draw_winner(msg:str):
     font = pygame.font.SysFont("comicsans", 72)
@@ -90,7 +96,17 @@ def draw_winner(msg:str):
     WIN.blit(text, (WIDTH / 2 - text.get_width() / 2, HEIGHT / 2 - text.get_height() / 2))
 
     pygame.display.flip()
-    pygame.time.delay(4000)
+    pygame.time.delay(1000)
+
+def grid_is_full(grid):
+    count = 0
+    for line in grid:
+        if -1 not in line:
+            count += 1
+    
+    if count == 3: 
+        return True
+    return False
 
 grid_btns = []
 
@@ -134,13 +150,19 @@ def main():
 
         if p1_won: # Someone won
             winner_txt = "Player X Won!"
+            game.last_winner = "X"
             draw_winner(winner_txt)
-            n.send("RESET_GAME")
+            n.send("WINNER_X")
             continue
         elif p2_won:
             winner_txt = "Player O Won!"
+            game.last_winner = "O"
             draw_winner(winner_txt)
-            n.send("RESET_GAME")
+            n.send("WINNER_O")
+            continue
+        elif game != None and grid_is_full(game.grid): # Grid is full, no one won.
+            game.last_winner = "DRAW"
+            n.send("WINNER_DRAW")
             continue
         else:
             # Check if its my turn
@@ -173,11 +195,6 @@ def main():
                                     data = n.send(str(btn))
                                     if data != None:
                                         game = data
-                                    # Reset game if the grid is full
-                                    if not any(empty_tiles):
-                                        n.send("RESET_GAME")
-                                        print("GAMUU RIZET' OOOO~")
-                                        continue
                                     print(game.grid) # TODO : Remove that bad boi
                                     break
                             myTurn = False
@@ -189,7 +206,7 @@ def main():
                 if btn.is_Hovering(mouse_pos):
                     btns_to_draw.append(btn)
 
-            draw_window(btns_to_draw, game, grid_btns, myTurn)
+            draw_window(btns_to_draw, game, grid_btns, myTurn, game.last_winner)
         
 
 main()
