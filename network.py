@@ -2,8 +2,8 @@ import socket
 import pickle
 
 class Network:
-    def __init__(self) -> None:
-        self.host = socket.gethostbyname(socket.gethostname())
+    def __init__(self, ip) -> None:
+        self.host = ip
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.port = 3000
         self.addr = (self.host, self.port)
@@ -17,7 +17,7 @@ class Network:
             self.client.connect(self.addr)
             return self.client.recv(1024).decode()
         except:
-            return None
+            raise ValueError('Unable to connect to the server. Is the server even on ?')
 
     def send(self, data):
         try:

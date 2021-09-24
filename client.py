@@ -1,5 +1,6 @@
 from network import Network
 import pygame
+import socket
 
 WIDTH, HEIGHT, GRID_WIDTH, GRID_HEIGHT = 768, 432, 390, 390
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -111,9 +112,15 @@ def grid_is_full(grid):
 grid_btns = []
 
 def main():
+    # Connect to a server
+    ip = input("Enter an IP address (empty = localhost): ")
+    if len(ip) == 0:
+        n = Network(socket.gethostbyname(socket.gethostname()))
+    else:
+        n = Network(ip)
+
     run = True
     clock = pygame.time.Clock()
-    n = Network()
     game = None
     myTurn = False
 

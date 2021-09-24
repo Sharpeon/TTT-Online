@@ -13,15 +13,10 @@ A simple online Tic Tac Toe game made in Python using Pygame
 3. ???
 4. Profit
 
-## Important note
+## Quick note
 
-When playing on different computers, the clients will have to edit the IP address that it connects to.
-To do so, just edit the `network.py` file like so.
-```py
-# Assign the IP address here
-self.host = "131.248.185.181"
-```
-> Line 6 of `network.py`
+When playing on different computers, the clients will have to enter the IP address that it will connect to when starting `client.py`.
+If you're playing on the same computer, you can just leave it empty and **press enter**
 
 ### Author
 [**Sharpeon**](https://github.com/Sharpeon)
